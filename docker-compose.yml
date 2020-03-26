@@ -1,0 +1,17 @@
+db:
+  image: postgres
+  ports:
+    - "5433:5432"
+web:
+  build: .
+  command: python3 manage.py runserver 0.0.0.0:8000
+  volumes:
+    - .:/code
+  ports:
+    - "8000:8000"
+  links:
+    - db:db
+  stdin_open: true
+  tty: true
+    #- "./rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro"
+    #- "./autocluster-0.4.1.ez:/usr/lib/rabbitmq/lib/rabbitmq_server-3.5.5/plugins/autocluster-0.4.1.ez"
