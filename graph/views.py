@@ -10,7 +10,7 @@ def index(request):
         # import pdb;pdb.set_trace()
         # test = pd.read_csv(join(settings.MEDIA_ROOT,settings.CSV_FILENAME))
         with open(join(settings.MEDIA_ROOT,settings.CSV_FILENAME), newline='') as f:
-            reader = csv.reader(f)
+            reader = csv.reader(f,delimiter=',')
             data = list(reader)
         return render(request,'index.html',{'data':data})
     elif request.method == 'POST' and 'myfile' in request.FILES and request.FILES['myfile']:
