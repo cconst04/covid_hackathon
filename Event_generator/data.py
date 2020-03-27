@@ -35,7 +35,7 @@ for i in range(0, records):
     writer1.writerow(dict([
     ('id', str(random.randint(1000,100000))),
     ('reason', str(random.randint(1,8))),
-    ('timestamp', fake.date_time_between(start_date='-1m', end_date='now', tzinfo=None)),
+    ('timestamp', fake.date_time_between(start_date='-30d', end_date='now', tzinfo=None)),
     ('postal_code', str(data1.post_code[pos]))]))
 
 writer2.writerow(dict(zip(fieldnames, fieldnames)))
@@ -44,7 +44,7 @@ for i in range(0, records):
     writer2.writerow(dict([
     ('id', str(random.randint(1000,100000))),
     ('reason', str(random.randint(1,8))),
-    ('timestamp', fake.date_time_between(start_date='-1m', end_date='now', tzinfo=None)),
+    ('timestamp', fake.date_time_between(start_date='-30d', end_date='now', tzinfo=None)),
     ('postal_code', str(data2.post_code[pos]))]))
 
 
@@ -54,7 +54,7 @@ for i in range(0, records):
     writer3.writerow(dict([
     ('id', str(random.randint(1000,100000))),
     ('reason', str(random.randint(1,8))),
-    ('timestamp', fake.date_time_between(start_date='-1m', end_date='now', tzinfo=None)),
+    ('timestamp', fake.date_time_between(start_date='-30d', end_date='now', tzinfo=None)),
     ('postal_code', str(data3.post_code[pos]))]))
 
 
@@ -64,5 +64,5 @@ for i in range(0, records):
     writer4.writerow(dict([
     ('id', str(random.randint(1000,100000))),
     ('reason', str(random.randint(1,8))),
-    ('timestamp', fake.date_time_between(start_date='-1m', end_date='now', tzinfo=None)),
+    ('timestamp', fake.date_time_between(start_date='-30d', end_date='now', tzinfo=None)),
     ('postal_code', str(data4.post_code[pos]))]))
