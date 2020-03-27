@@ -8,7 +8,22 @@
 
 
         <!-- Upload form. Note enctype attribute! -->
+        <h1>Upload SMS CSV</h1>
+        <p>CSV Format:SSN,Activity_category,Postal_code,Extra_Info(optional for category 8)</p>
         <form action="{% url 'index' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <p>{{ form.non_field_errors }}</p>
+            <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
+            <p>
+                {{ form.docfile.errors }}
+                {{ form.docfile }}
+            </p>
+            <input type="file" name="myfile" />
+            <p><input type="submit" value="Upload" /></p>
+        </form>
+        <h1>Upload Postal codes description</h1>
+        <p>CSV Format:Postal_code,Lat,Lon</p>
+        <form action="{% url 'load_postal_codes' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <p>{{ form.non_field_errors }}</p>
             <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
