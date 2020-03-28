@@ -8,20 +8,22 @@ $(document).ready(function () {
   var chart = am4core.create("chartdiv", am4charts.XYChart);
 
   var data = [];
-  $.get("per_hour_graph", function(response, status){
-    console.log(response);
-    for(var i=0;i<response.data.length;i++){
-      data.push({'date':response.data[i].datetime,'value':response.data[i].value});
-    }
-    console.log(data);
-    load_graph();
-  });
+  for(var i=0;i<all_data.count_per_hour.length;i++){
+    data.push({'date':new Date(all_data.count_per_hour[i].datetime),'value':all_data.count_per_hour[i].value});
+  }
+  console.log(data);
+  load_graph();
 
   function load_graph(){
     chart.data = data;
 
     // Create axes
-    var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+    var xAxis = new am4charts.DateAxis();
+    xAxis.baseInterval = {
+      timeUnit: "hour",
+      count: 1
+    };
+    var dateAxis = chart.xAxes.push(xAxis);
     dateAxis.renderer.minGridDistance = 60;
 
     var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());

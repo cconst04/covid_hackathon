@@ -1,9 +1,15 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-{% for row in data %}
-{{row}}
-{% endfor %}
 <div id="chartdiv"></div>
+<figure class="highcharts-figure">
+    <div id="container"></div>
+    <p class="highcharts-description">
+        Chart showing browser market shares. Clicking on individual columns
+        brings up more detailed data. This chart makes use of the drilldown
+        feature in Highcharts to easily switch between datasets.
+    </p>
+</figure>
 <div id="map"></div>
+<script src="{% static "count_per_hour.js" %}"></script>
 {% endblock %}
