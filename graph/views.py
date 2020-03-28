@@ -19,7 +19,8 @@ def get_all_data(request):
             'data':list(Metric.objects.all().values('reason','postal_code__postal_code','ssn','date','extras')),
             'count_per_hour':per_hour_graph(),
             'count_per_city_today':count_per_city,
-            'count_per_postal':postal_list
+            'count_per_postal':postal_list,
+            'count_per_coordinate':count_per_coordinate()
 
         },safe=False)
 
@@ -125,3 +126,12 @@ def today_count_by_region():
         result_list.append(city_dict)
     print(count_per_city)
     return result_list,count_per_city
+
+def count_per_coordinate():
+    today_min = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
+    today_max = datetime.datetime.combine(datetime.date.today(), datetime.time.max)
+    result = Metric.objects.filter(date__range=(today_min, today_max)) \
+                           .values('postal_code__lat','postal_code__lon') \
+                           .annotate(lat=F('postal_code__lat'),lon=F('postal_code__lon'),value=Count('id')) \
+                           .values('lat','lon','value')
+    return list(result)

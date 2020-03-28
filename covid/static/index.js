@@ -4,16 +4,18 @@ function initMap() {
     center: {lat: 34.7886447, lng: 32.4056301},
     zoom: 15
   });
-  var marker = new google.maps.Marker({
-    position: {lat: 34.7886447, lng: 32.4056301},
-    map: map,
-    title: 'Hello World!'
-  });
-  var infowindow = new google.maps.InfoWindow({
-    content: "<h1>There was an infected person here</h1><br><b>Time:12-03-2020 17:30</b>"
-  });
-  marker.addListener('click', function() {
-    infowindow.open(map, marker);
-  });
+  for(var i=0;i<all_data.count_per_coordinate.length;i++){
+    var marker = new google.maps.Marker({
+      position: {lat: all_data.count_per_coordinate[i].lat, lng: all_data.count_per_coordinate[i].lon},
+      map: map,
+      title: "Total sms:"+all_data.count_per_coordinate[i].value
+    });
+    var infowindow = new google.maps.InfoWindow({
+      content: "Total sms:"+all_data.count_per_coordinate[i].value
+    });
+    marker.addListener('click', function() {
+      infowindow.open(map, marker);
+    });
+  }
 
 }

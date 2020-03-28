@@ -5,10 +5,10 @@ Highcharts.chart('container', {
         type: 'column'
     },
     title: {
-        text: 'Browser market shares. January, 2018'
+        text: 'Number of sms per city today'
     },
     subtitle: {
-        text: 'Click the columns to view versions. Source: <a href="http://statcounter.com" target="_blank">statcounter.com</a>'
+        text: 'Click the columns to view count of each postal code'
     },
     accessibility: {
         announceNewData: {
@@ -20,7 +20,7 @@ Highcharts.chart('container', {
     },
     yAxis: {
         title: {
-            text: 'Total percent market share'
+            text: 'Number of SMS sent today'
         }
 
     },
