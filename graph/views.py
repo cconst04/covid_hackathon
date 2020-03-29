@@ -20,7 +20,8 @@ def get_all_data(request):
             'count_per_hour':per_hour_graph(),
             'count_per_city_today':count_per_city,
             'count_per_postal':postal_list,
-            'count_per_coordinate':count_per_coordinate()
+            'count_per_coordinate':count_per_coordinate(),
+            'category_per_city':category_per_city()
 
         },safe=False)
 
@@ -95,15 +96,10 @@ def today_count_by_region():
     today_min = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
     today_max = datetime.datetime.combine(datetime.date.today(), datetime.time.max)
 
-    cities_zip_code = {
-        'Paphos':(8000,8500),
-        'Nicosia':(1000,2500),
-        'Larnaca':(6000,7200),
-        'Limassol':(3000,4400)
-    }
+
     result_list = [];
     count_per_city = []
-    for city,postal_range in cities_zip_code.items():
+    for city,postal_range in settings.CITIES_ZIP_CODE.items():
         curr_city = Metric.objects.filter(date__range=(today_min, today_max),
                                           postal_code__postal_code__range=(postal_range[0],postal_range[1])) \
                                   .order_by("postal_code__postal_code")
@@ -135,3 +131,26 @@ def count_per_coordinate():
                            .annotate(lat=F('postal_code__lat'),lon=F('postal_code__lon'),value=Count('id')) \
                            .values('lat','lon','value')
     return list(result)
+
+def category_per_city():
+    today_min = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
+    today_max = datetime.datetime.combine(datetime.date.today(), datetime.time.max)
+    data = []
+    for city in settings.CITIES_ZIP_CODE:
+        code_from = settings.CITIES_ZIP_CODE[city][0]
+        code_to = settings.CITIES_ZIP_CODE[city][1]
+        result = Metric.objects.filter(postal_code__postal_code__range=(code_from,code_to)) \
+                               .values('reason') \
+                               .annotate(value=Count('id')) \
+                               .values('reason','value') \
+                               .order_by('reason')
+        city_stats = [city] + [0]*8
+        sum = 0
+        for item in result:
+            sum+=item['value']
+            city_stats[item['reason']]=item['value']
+
+        city_stats.append(sum)
+        city_stats.append(-1)
+        data.append(city_stats)
+    return data

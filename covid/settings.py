@@ -34,6 +34,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'ggx)rf&a4k*vmdv-h29+$c-)98r1^2)z-wm+#r5%ox8$_i#5b)'
 
+CITIES_ZIP_CODE = {
+    'Paphos':(8000,8500),
+    'Nicosia':(1000,2500),
+    'Larnaca':(6000,7200),
+    'Limassol':(3000,4400)
+}
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
