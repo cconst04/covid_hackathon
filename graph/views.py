@@ -6,22 +6,26 @@ from django.conf import settings
 from .models import *
 import csv
 from django.db.models.functions import TruncHour,TruncMonth
-from django.db.models import Count,F,Sum
+from django.db.models import Count,F,Sum,Avg
 from django.core.serializers import serialize
 import datetime
+from django.utils import timezone
+
 #templates/examples/dashboard/index.html
 def index(request):
     return render(request,'index.html')
 
 def get_all_data(request):
     postal_list,count_per_city = today_count_by_region()
+    baseline_comparison = hourly_baseline_comparison()
     return JsonResponse({
             'data':list(Metric.objects.all().values('reason','postal_code__postal_code','ssn','date','extras')),
             'count_per_hour':per_hour_graph(),
             'count_per_city_today':count_per_city,
             'count_per_postal':postal_list,
             'count_per_coordinate':count_per_coordinate(),
-            'category_per_city':category_per_city()
+            'category_per_city':category_per_city(),
+            'baseline_comparison':baseline_comparison,
 
         },safe=False)
 
@@ -154,3 +158,44 @@ def category_per_city():
         city_stats.append(-1)
         data.append(city_stats)
     return data
+
+
+def hourly_baseline_comparison():
+    today_min = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
+    today_max = datetime.datetime.combine(datetime.date.today(), datetime.time.max)
+    yesterday = datetime.datetime.now()-datetime.timedelta(days=1)
+
+    avg = [0]*24
+    date_now = timezone.now()
+    oldest_day = (date_now-Metric.objects.all().order_by('date').first().date).days
+    for i in range(1,oldest_day+1):
+        curr_day = datetime.datetime.now()-datetime.timedelta(days=i)
+        result = Metric.objects.filter(date__day=curr_day.day,
+                                       date__month=curr_day.month,
+                                       date__year=curr_day.year) \
+                               .annotate(hour=TruncHour('date')) \
+                               .values('hour') \
+                               .annotate(hour_count=Count('hour')) \
+                               .values('hour','hour_count')
+        for item in result:
+            # import pdb;pdb.set_trace()
+            avg[item['hour'].hour]+=item['hour_count']
+    avg = [item/(oldest_day) for item in avg]
+
+
+    today_records = Metric.objects.filter(date__range=(today_min, today_max)) \
+                                  .annotate(hour=TruncHour('date')) \
+                                  .values('hour') \
+                                  .annotate(hour_count=Count('hour')) \
+                                  .values('hour','hour_count')
+    # import pdb;pdb.set_trace()
+    result_list = [0]*24
+    for i in range(len(today_records)):
+        temp = {
+        'date':today_records[i]['hour'].strftime("%Y-%m-%dT%H:%M:%SZ"),
+        'value1':today_records[i]['hour_count'],
+        'value2':avg[today_records[i]['hour'].hour],
+        'previousDate':today_records[i]['hour'].strftime("%Y-%m-%dT%H:%M:%SZ")
+        }
+        result_list[today_records[i]['hour'].hour]=temp
+    return result_list

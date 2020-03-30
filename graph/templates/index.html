@@ -1,16 +1,33 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<div id="chartdiv"></div>
-<figure class="highcharts-figure">
-    <div id="container"></div>
-    <p class="highcharts-description">
-        Chart showing browser market shares. Clicking on individual columns
-        brings up more detailed data. This chart makes use of the drilldown
-        feature in Highcharts to easily switch between datasets.
-    </p>
-</figure>
-<div id="map"></div>
-<div id="category_map"></div>
+<div class="container">
+  <div class="card">
+    <div class="card-header">Messages per postal code</div>
+    <div id="map"></div>
+  </div>
+  <div class="card">
+    <div class="card-header">Activity per hour</div>
+    <div id="chartdiv"></div>
+  </div>
+  <div class="card">
+    <div class="card-header">Activity per hour</div>
+    <figure class="highcharts-figure">
+        <div id="container"></div>
+        <p class="highcharts-description">
+            Number of SMS per city. Click on a bar for more details.
+        </p>
+    </figure>
+  </div>
+  <div class="card">
+    <div class="card-header">Category count per city</div>
+    <div id="category_map"></div>
+  </div>
+  <div class="card">
+    <div class="card-header">Hourly comparison with baseline</div>
+    <div id="baseline_compare"></div>
+  </div>
+</div>
 <script src="{% static "count_per_hour.js" %}"></script>
+<script src="{% static "count_baseline_compare.js" %}"></script>
 {% endblock %}
