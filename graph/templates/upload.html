@@ -23,8 +23,26 @@
   </div>
   <div class="card">
     <h1>Upload Postal codes description</h1>
-    <p>CSV Format:Postal_code,Lat,Lon</p>
+    <p>CSV Format:Postal_code,Lat,Lon,Population</p>
     <form action="{% url 'load_postal_codes' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <p>{{ form.non_field_errors }}</p>
+        <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
+        <p>
+            {{ form.docfile.errors }}
+            {{ form.docfile }}
+        </p>
+        <div class="custom-file">
+          <input type="file" name="myfile" class="custom-file-input" id="customFile">
+          <label class="custom-file-label" for="customFile">Choose file</label>
+        </div>
+        <p><input type="submit" class="btn btn-primary" value="Upload" /></p>
+    </form>
+  </div>
+  <div class="card">
+    <h1>Upload age for each ID</h1>
+    <p>CSV Format:ID,Age</p>
+    <form action="{% url 'load_id_age' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <p>{{ form.non_field_errors }}</p>
         <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>

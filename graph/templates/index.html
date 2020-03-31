@@ -4,6 +4,7 @@
 <div class="container">
   <div class="card">
     <div class="card-header">Messages per postal code</div>
+      <input id="place_search" class="controls" type="text" placeholder="Search Box">
     <div id="map"></div>
   </div>
   <div class="card">
@@ -30,4 +31,10 @@
 </div>
 <script src="{% static "count_per_hour.js" %}"></script>
 <script src="{% static "count_baseline_compare.js" %}"></script>
+<script src="{% static "index.js" %}"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjcV1g05m75vFiTdVb8-kDhPjsKiJZyXo&libraries=places&callback=initMap"
+async defer></script>
+<script src="{% static "count_per_city.js" %}"></script>
+<script src="{% static "count_per_city_category.js" %}"></script>
+
 {% endblock %}

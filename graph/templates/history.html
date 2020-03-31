@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+  <div class="card">
+    <div class="card-header">Daily SMS sum per city</div>
+    <div id="history_graph_per_city"/>
+  </div>
+</div>
+<script src = "{% static "history_graph_per_city.js" %}"></script>
+{% endblock %}

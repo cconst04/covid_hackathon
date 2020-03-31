@@ -24,15 +24,10 @@
     <meta charset="utf-8">
   </head>
   <body>
+    <script src = "{% static "fetch_data.js" %}"></script>
     {% include "header.html" %}
     {% block content %}
     {% endblock %}
-    <script src="{% static "index.js" %}"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjcV1g05m75vFiTdVb8-kDhPjsKiJZyXo&callback=initMap"
-    async defer></script>
-    <script src = "{% static "fetch_data.js" %}"></script>
-    <script src="{% static "count_per_hour.js" %}"></script>
-    <script src="{% static "count_per_city.js" %}"></script>
-    <script src="{% static "count_per_city_category.js" %}"></script>
+
   </body>
 </html>

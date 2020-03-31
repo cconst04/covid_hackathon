@@ -9,10 +9,16 @@ class PostalCodeInfo(models.Model):
     lat = models.FloatField()
     lon = models.FloatField()
 
+class Person(models.Model):
+    ssn = models.CharField(blank=True,max_length=20)
+    age = models.IntegerField()
 
 class Metric(models.Model):
     date = models.DateTimeField(blank=True)
-    ssn = models.CharField(blank=True,max_length=20)
+    ssn = models.ForeignKey(
+        Person,
+        on_delete=models.DO_NOTHING
+    )
     reason = models.IntegerField()
     postal_code = models.ForeignKey(
 		PostalCodeInfo,

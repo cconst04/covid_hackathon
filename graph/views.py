@@ -5,11 +5,12 @@ from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from .models import *
 import csv
-from django.db.models.functions import TruncHour,TruncMonth
+from django.db.models.functions import TruncHour,TruncMonth,TruncDay
 from django.db.models import Count,F,Sum,Avg
 from django.core.serializers import serialize
 import datetime
 from django.utils import timezone
+import os
 
 #templates/examples/dashboard/index.html
 def index(request):
@@ -17,7 +18,7 @@ def index(request):
 
 def get_all_data(request):
     postal_list,count_per_city = today_count_by_region()
-    baseline_comparison = hourly_baseline_comparison()
+    baseline_comparison,daily_count_per_city = hourly_baseline_comparison()
     return JsonResponse({
             'data':list(Metric.objects.all().values('reason','postal_code__postal_code','ssn','date','extras')),
             'count_per_hour':per_hour_graph(),
@@ -26,12 +27,19 @@ def get_all_data(request):
             'count_per_coordinate':count_per_coordinate(),
             'category_per_city':category_per_city(),
             'baseline_comparison':baseline_comparison,
+            'daily_count_per_city':daily_count_per_city
 
         },safe=False)
+
+def history_page(request):
+    return render(request,'history.html')
+
 
 def upload_file(request):
     if request.method == 'POST' and 'myfile' in request.FILES and request.FILES['myfile']:
         myfile = request.FILES['myfile']
+        if os.path.exists(os.path.join(settings.MEDIA_ROOT, settings.CSV_FILENAME)):
+            os.remove(os.path.join(settings.MEDIA_ROOT, settings.CSV_FILENAME))
         fs = FileSystemStorage()
         filename = fs.save(settings.CSV_FILENAME, myfile)
         with open(join(settings.MEDIA_ROOT,settings.CSV_FILENAME), newline='') as f:
@@ -41,9 +49,12 @@ def upload_file(request):
         Metric.objects.all().delete()#delete previous records
         for row in data:
             postal_code_row = PostalCodeInfo.objects.filter(postal_code=row[3]).first()
+            person_row = Person.objects.filter(ssn=row[0]).first()
+            if not person_row:#no such person exists
+                continue
             if not postal_code_row:#no such postal code exists continue
                 continue
-            record = Metric(ssn=row[0],reason=row[1],postal_code=postal_code_row,date=row[2])
+            record = Metric(ssn=person_row,reason=row[1],postal_code=postal_code_row,date=row[2])
             record.save()
         uploaded_file_url = fs.url(filename)
         return render(request,'index.html')
@@ -52,9 +63,11 @@ def upload_file(request):
 def load_postal_codes(request):
     if request.method=='POST' and 'myfile' in request.FILES and request.FILES['myfile']:
         myfile = request.FILES['myfile']
+        if os.path.exists(os.path.join(settings.MEDIA_ROOT, settings.CSV_FILENAME)):
+            os.remove(os.path.join(settings.MEDIA_ROOT, settings.CSV_FILENAME))
         fs = FileSystemStorage()
-        filename = fs.save("temp.csv", myfile)
-        with open(join(settings.MEDIA_ROOT,"temp.csv"), newline='') as f:
+        filename = fs.save(settings.CSV_FILENAME, myfile)
+        with open(join(settings.MEDIA_ROOT,settings.CSV_FILENAME), newline='') as f:
             reader = csv.reader(f,delimiter=',')
             data = list(reader)
         data.pop(0)
@@ -101,7 +114,7 @@ def today_count_by_region():
     today_max = datetime.datetime.combine(datetime.date.today(), datetime.time.max)
 
 
-    result_list = [];
+    result_list = []
     count_per_city = []
     for city,postal_range in settings.CITIES_ZIP_CODE.items():
         curr_city = Metric.objects.filter(date__range=(today_min, today_max),
@@ -164,12 +177,24 @@ def hourly_baseline_comparison():
     today_min = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
     today_max = datetime.datetime.combine(datetime.date.today(), datetime.time.max)
     yesterday = datetime.datetime.now()-datetime.timedelta(days=1)
-
+    daily_count = {}
     avg = [0]*24
     date_now = timezone.now()
     oldest_day = (date_now-Metric.objects.all().order_by('date').first().date).days
     for i in range(1,oldest_day+1):
         curr_day = datetime.datetime.now()-datetime.timedelta(days=i)
+        for city in settings.CITIES_ZIP_CODE:#count for each city daily count
+            code_from = settings.CITIES_ZIP_CODE[city][0]
+            code_to = settings.CITIES_ZIP_CODE[city][1]
+            result = Metric.objects.filter(date__day=curr_day.day,
+                                           date__month=curr_day.month,
+                                           date__year=curr_day.year,
+                                           postal_code__postal_code__range=(code_from,code_to))
+            if not city in daily_count:
+                daily_count[city]=[{'date':curr_day,'value':len(result)}]
+            else:
+                daily_count[city].append({'date':curr_day,'value':len(result)})
+
         result = Metric.objects.filter(date__day=curr_day.day,
                                        date__month=curr_day.month,
                                        date__year=curr_day.year) \
@@ -198,4 +223,23 @@ def hourly_baseline_comparison():
         'previousDate':today_records[i]['hour'].strftime("%Y-%m-%dT%H:%M:%SZ")
         }
         result_list[today_records[i]['hour'].hour]=temp
-    return result_list
+    print(daily_count)
+    return result_list,daily_count
+
+def load_id_age(request):
+    if request.method=='POST' and 'myfile' in request.FILES and request.FILES['myfile']:
+        myfile = request.FILES['myfile']
+        if os.path.exists(os.path.join(settings.MEDIA_ROOT, settings.CSV_FILENAME)):
+            os.remove(os.path.join(settings.MEDIA_ROOT, settings.CSV_FILENAME))
+        fs = FileSystemStorage()
+        filename = fs.save(settings.CSV_FILENAME, myfile)
+        with open(join(settings.MEDIA_ROOT,settings.CSV_FILENAME), newline='') as f:
+            reader = csv.reader(f,delimiter=',')
+            data = list(reader)
+        data.pop(0)
+        for row in data:
+            if len(Person.objects.filter(ssn=row[0],age=row[1]))>0:
+                continue
+            record = Person(ssn=row[0],age=row[1])
+            record.save()
+        return HttpResponse("Success")
