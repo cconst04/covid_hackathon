@@ -14,7 +14,7 @@ import os
 
 #templates/examples/dashboard/index.html
 def index(request):
-    return render(request,'index.html')
+    return render(request,'index.html',sidebar_stats())
 
 def get_all_data(request):
     postal_list,count_per_city = today_count_by_region()
@@ -57,7 +57,7 @@ def upload_file(request):
             record = Metric(ssn=person_row,reason=row[1],postal_code=postal_code_row,date=row[2])
             record.save()
         uploaded_file_url = fs.url(filename)
-        return render(request,'index.html')
+        # return render(request,'upload.html')
     return render(request,'upload.html')
 
 def load_postal_codes(request):
@@ -243,3 +243,47 @@ def load_id_age(request):
             record = Person(ssn=row[0],age=row[1])
             record.save()
         return HttpResponse("Success")
+
+
+def sidebar_stats():
+    today_min = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
+    today_max = datetime.datetime.combine(datetime.date.today(), datetime.time.max)
+    yesterday_min = today_min - datetime.timedelta(days=1)
+    yesterday_max = today_max - datetime.timedelta(days=1)
+    ranges = [(10,20),(21,40),(41,60),(61,100)]
+    pct_per_age = []
+    pct_change = []
+    for item in ranges:
+        result = Metric.objects.filter(ssn__age__range=(item[0],item[1]),
+                                       date__range=(today_min,today_max)) \
+                               .distinct('ssn__ssn')
+        total = Metric.objects.filter(ssn__age__range=(item[0],item[1])).distinct('ssn')
+        pct_today = 100*len(result)/len(total)
+        pct_per_age.append({'range':str(item[0])+'-'+str(item[1]),
+                            'users':len(result),
+                            'total':len(total),
+                            'pct':100*len(result)/len(total)})
+
+        yesterday_result = Metric.objects.filter(ssn__age__range=(item[0],item[1]),
+                                                 date__range=(yesterday_min,yesterday_max)) \
+                                         .distinct('ssn__ssn')
+        pct_yesterday = 100*len(yesterday_result)/len(total)
+        pct_change.append({'range':str(item[0])+'-'+str(item[1]),
+                           'users_yesterday':len(yesterday_result),
+                           'users_today':len(result),
+                           'pct_change':(len(result)-len(yesterday_result))/len(total),
+                           'total':len(total)})
+    return {'age_stats_change':pct_change,
+            'today_age_stats':pct_per_age,
+            'total_messages':len(Metric.objects.all())}
+
+
+def individual_stats(request):
+    ssn = request.GET.get('ssn')
+    if not ssn:
+        return JsonResponse({'status':0,'msg':'missing fields'})
+    ssn_row = Person.objects.filter(ssn=ssn).first()
+    if not ssn_row:
+        return JsonResponse({'status':0,'msg':'SSN not found'})
+    metrics = Metric.objects.filter(ssn=ssn_row).order_by('-date').values('date','reason')
+    return JsonResponse({'status':1,'data':list(metrics)})

@@ -3,6 +3,21 @@
   height: 500px;
 }
 
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.space-left{
+  padding-left: 30px;
+}
+
+.align-center{
+  text-align: center;
+}
+
 #map {
   height:300px;
 }
@@ -45,14 +60,6 @@
     margin: 1em auto;
 }
 
-#main{
-  width: 100%;
-  
-}
-#statistics{
-   padding-left: 25px;
-}
-
 #container {
     height: 400px;
 }
@@ -86,5 +93,9 @@
 }
 
 #history_graph_per_city{
+  height:500px;
+}
+
+.bottom_row{
   height:500px;
 }
