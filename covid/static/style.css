@@ -15,6 +15,14 @@
     margin: 1em auto;
 }
 
+#main{
+  width: 100%;
+  
+}
+#statistics{
+   padding-left: 25px;
+}
+
 #container {
     height: 400px;
 }
