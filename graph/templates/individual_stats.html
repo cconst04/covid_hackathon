@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+  <div class="card">
+    <div class="card-header">People statistics</div>
+    Total Population:<b>{{total_people}}</b><br>
+    Active Population(have sent at least 1 SMS to the system):<b>{{total_active}}</b>
+  </div>
+  <div class="card">
+    <div class="card-header">Search particular person</div>
+    <label for="ssn_input">Name:</label>
+    <input id="people_input" type="text" class="form-control" id="ssn_input" placeholder="SSN">
+    <button id="people_search" class="btn btn-primary">
+      Search
+    </button>
+  </div>
+  <div class="card" style="display:none" id="search_results">
+    <div class="card-header" id="search_header"></div>
+  </div>
+</div>
+<div id="people_url" url="{% url 'individual_info' %}"></div>
+<script src="{% static "people_search.js" %}"></script>
+{% endblock %}

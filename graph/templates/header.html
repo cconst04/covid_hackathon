@@ -15,14 +15,21 @@
         </a>
       </li>
       <li class="nav-item {% if request.resolver_match.url_name == 'history' %}active{% endif %}">
-        <a class="nav-link" href="history">History
+        <a class="nav-link" href="{% url 'history' %}">History
           <span class="sr-only">
-            {% if request.resolver_match.url_name == 'upload' %}(current){% endif %}
+            {% if request.resolver_match.url_name == 'history' %}(current){% endif %}
+          </span>
+        </a>
+      </li>
+      <li class="nav-item {% if request.resolver_match.url_name == 'individual_stats' %}active{% endif %}">
+        <a class="nav-link" href="{% url 'individual_stats' %}">Individual Statistics
+          <span class="sr-only">
+            {% if request.resolver_match.url_name == 'individual_stats' %}(current){% endif %}
           </span>
         </a>
       </li>
       <li class="nav-item {% if request.resolver_match.url_name == 'upload' %}active{% endif %}">
-        <a class="nav-link" href="upload">Upload Data
+        <a class="nav-link" href="{% url 'upload' %}">Upload Data
           <span class="sr-only">
             {% if request.resolver_match.url_name == 'upload' %}(current){% endif %}
           </span>

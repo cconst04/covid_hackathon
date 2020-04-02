@@ -27,13 +27,33 @@ def get_all_data(request):
             'count_per_coordinate':count_per_coordinate(),
             'category_per_city':category_per_city(),
             'baseline_comparison':baseline_comparison,
-            'daily_count_per_city':daily_count_per_city
+            'daily_count_per_city':daily_count_per_city,
+            'fines':list(Fine.objects.all().values('date','lat','lon','count'))
 
         },safe=False)
 
 def history_page(request):
     return render(request,'history.html')
 
+
+def upload_fines(request):
+    if request.method == 'POST' and 'myfile' in request.FILES and request.FILES['myfile']:
+        myfile = request.FILES['myfile']
+        if os.path.exists(os.path.join(settings.MEDIA_ROOT, settings.CSV_FILENAME)):
+            os.remove(os.path.join(settings.MEDIA_ROOT, settings.CSV_FILENAME))
+        fs = FileSystemStorage()
+        filename = fs.save(settings.CSV_FILENAME, myfile)
+        with open(join(settings.MEDIA_ROOT,settings.CSV_FILENAME), newline='') as f:
+            reader = csv.reader(f,delimiter=',')
+            data = list(reader)
+        data.pop(0) #remove the description
+        Fine.objects.all().delete()#delete previous records
+        for row in data:
+            record = Fine(date=row[0],lat=row[1],lon=row[2],count=row[3])
+            record.save()
+        uploaded_file_url = fs.url(filename)
+        # return render(request,'upload.html')
+    return render(request,'upload.html')
 
 def upload_file(request):
     if request.method == 'POST' and 'myfile' in request.FILES and request.FILES['myfile']:
@@ -279,6 +299,14 @@ def sidebar_stats():
 
 
 def individual_stats(request):
+    result = Metric.objects.all().distinct('ssn__ssn')
+    total_active = len(result)
+    total_people = len(Person.objects.all())
+
+    return render(request,'individual_stats.html',{'total_active':total_active,'total_people':total_people})
+
+
+def individual_info(request):
     ssn = request.GET.get('ssn')
     if not ssn:
         return JsonResponse({'status':0,'msg':'missing fields'})

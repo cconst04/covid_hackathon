@@ -4,7 +4,7 @@ function initMap() {
     center: {lat: 34.7886447, lng: 32.4056301},
     zoom: 12
   });
-  var infoWindow = [];
+
   for(var i=0;i<all_data.count_per_coordinate.length;i++){
     var cityCircle = new google.maps.Circle({
         strokeColor: '#FF0000',
@@ -32,6 +32,32 @@ function initMap() {
     // cityCircle.addListener('click', function() {
     //   infowindow.open(map, cityCircle);
     // });
+  }
+
+  for(var i=0;i<all_data.fines.length;i++){
+    var cityCircle = new google.maps.Circle({
+        strokeColor: '#329DA8',
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: '#329DA8',
+        fillOpacity: 0.35,
+        map: map,
+        title:"Total fines:"+all_data.fines[i].count+" "+(new Date(all_data.fines[i].date)),
+        center: {lat: all_data.fines[i].lat, lng: all_data.fines[i].lon},
+        radius: Math.sqrt(all_data.fines[i].count) * 100
+      });
+
+    // var marker = new google.maps.Marker({
+    //   position: {lat: all_data.count_per_coordinate[i].lat, lng: all_data.count_per_coordinate[i].lon},
+    //   map: map,
+    //   title: "Total sms:"+all_data.count_per_coordinate[i].value
+    // });
+    var infoWindow = new google.maps.InfoWindow();
+    google.maps.event.addListener(cityCircle, 'click', function(ev){
+      infoWindow.setContent(this.title);
+      infoWindow.setPosition(ev.latLng);
+      infoWindow.open(map);
+    });
   }
 
   var defaultBounds = new google.maps.LatLngBounds(

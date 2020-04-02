@@ -25,3 +25,9 @@ class Metric(models.Model):
 		on_delete=models.DO_NOTHING
 	)
     extras = models.CharField(blank=True,max_length=50)
+
+class Fine(models.Model):
+    date = models.DateTimeField(blank=True,auto_now_add=True)
+    lat = models.FloatField()
+    lon = models.FloatField()
+    count = models.IntegerField()

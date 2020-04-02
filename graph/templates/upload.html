@@ -57,5 +57,23 @@
         <p><input type="submit" class="btn btn-primary" value="Upload" /></p>
     </form>
   </div>
+  <div class="card">
+    <h1>Upload Fines</h1>
+    <p>CSV Format:timestamp,latitude,longitude,fine count</p>
+    <form action="{% url 'upload_fines' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <p>{{ form.non_field_errors }}</p>
+        <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
+        <p>
+            {{ form.docfile.errors }}
+            {{ form.docfile }}
+        </p>
+        <div class="custom-file">
+          <input type="file" name="myfile" class="custom-file-input" id="customFile">
+          <label class="custom-file-label" for="customFile">Choose file</label>
+        </div>
+        <p><input type="submit" class="btn btn-primary" value="Upload" /></p>
+    </form>
+  </div>
 </div>
 {% endblock %}

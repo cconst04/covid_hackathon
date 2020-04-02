@@ -11,4 +11,7 @@ urlpatterns = [
     path('load_postal_codes', views.load_postal_codes, name='load_postal_codes'),
     path('load_id_age', views.load_id_age, name='load_id_age'),
     path('per_hour_graph', views.per_hour_graph, name='per_hour_graph'),
+    path('individual_stats', views.individual_stats, name='individual_stats'),
+    path('individual_info', views.individual_info, name='individual_info'),
+    path('upload_fines', views.upload_fines, name='upload_fines'),
 ]
