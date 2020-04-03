@@ -4,21 +4,36 @@
 <div class="row" id="main">
   <div class="col-2 space-left" id="statistics">
     <h4>Total SMS sent:{{total}}</h4>
-    <h4>SMS sent today per age group</h4>
-    {% for item in today_age_stats %}
-    Age group {{item.range}}<span class="pull-right strong"></span>
-    <div class="progress">
-      <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="{{item.users}}"aria-valuemin="0" aria-valuemax="{{item.total}}" style="width:{{item.pct}}%">
-        {{item.users}}/{{item.total}}
-      </div>
-    </div>
-    {% endfor %}
-
-    <h4>PCT change:</h4>
+    <ul class="list-group">
+      {% for item in today_age_stats %}
+      <li class="list-group-item active">Age group {{item.range}}<span class="pull-right strong"></span></li>
+      <li class="list-group-item">
+        <div class="progress">
+          <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="{{item.users}}"aria-valuemin="0" aria-valuemax="{{item.total}}" style="width:{{item.pct}}%">
+            {{item.users}}/{{item.total}}
+          </div>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    <h4>Change from yesterday</h4>
+    <ul class="list-group">
     {% for item in age_stats_change %}
-    {{item.range}} Change {{item.pct_change}}%<span class="pull-right strong"></span>
+    <li class="list-group-item active">Age group {{item.range}}<span class="pull-right strong"></span></li>
+    <li class="list-group-item">
+      Change {{item.pct_change|floatformat:2}}%
+      <span class="pull-right strong">
+        {% if item.pct_change > 0 %}
+        <img src="https://pngimage.net/wp-content/uploads/2018/06/green-up-arrow-png-3.png" class="small-icon"/>
+        {% elif item.pc_change < 0 %}
+        <img class="small-icon" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Red_Arrow_Down.svg/1200px-Red_Arrow_Down.svg.png"/>
+        {%else %}
+        <img class="small-icon" src="https://cdn0.iconfinder.com/data/icons/octicons/1024/dash-512.png"/>
+        {% endif %}
+      </span>
+    </li>
     {% endfor %}
-
+    </ul>
   </div>
   <div class="col-10 align-center">
   <!-- <div class="container"> -->

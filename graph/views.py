@@ -14,18 +14,23 @@ import os
 
 #templates/examples/dashboard/index.html
 def index(request):
+    # import pdb;pdb.set_trace()
     return render(request,'index.html',sidebar_stats())
 
 def get_all_data(request):
-    postal_list,count_per_city = today_count_by_region()
-    baseline_comparison,daily_count_per_city = hourly_baseline_comparison()
+    try:
+        curr_date = datetime.datetime.strptime(request.GET['date'],"%Y-%m-%d")
+    except:
+        curr_date = datetime.datetime.now()
+    postal_list,count_per_city = today_count_by_region(curr_date)
+    baseline_comparison,daily_count_per_city = hourly_baseline_comparison(curr_date)
     return JsonResponse({
             'data':list(Metric.objects.all().values('reason','postal_code__postal_code','ssn','date','extras')),
-            'count_per_hour':per_hour_graph(),
+            'count_per_hour':per_hour_graph(curr_date),
             'count_per_city_today':count_per_city,
             'count_per_postal':postal_list,
-            'count_per_coordinate':count_per_coordinate(),
-            'category_per_city':category_per_city(),
+            'count_per_coordinate':count_per_coordinate(curr_date),
+            'category_per_city':category_per_city(curr_date),
             'baseline_comparison':baseline_comparison,
             'daily_count_per_city':daily_count_per_city,
             'fines':list(Fine.objects.all().values('date','lat','lon','count'))
@@ -101,9 +106,9 @@ def load_postal_codes(request):
 '''
 Grouped by hour graph
 '''
-def per_hour_graph():
-    start_date = datetime.datetime.now()
-    end_date = datetime.datetime.now()-datetime.timedelta(days=3)#show past 30 days
+def per_hour_graph(curr_date):
+    start_date = curr_date
+    end_date = curr_date-datetime.timedelta(days=3)#show past 30 days
     delta = datetime.timedelta(days=1)
     date_dict=[]
     while start_date >= end_date:
@@ -129,9 +134,9 @@ def per_hour_graph():
 '''
 Grouped by count graph
 '''
-def today_count_by_region():
-    today_min = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
-    today_max = datetime.datetime.combine(datetime.date.today(), datetime.time.max)
+def today_count_by_region(curr_date):
+    today_min = datetime.datetime.combine(curr_date, datetime.time.min)
+    today_max = datetime.datetime.combine(curr_date, datetime.time.max)
 
 
     result_list = []
@@ -160,23 +165,24 @@ def today_count_by_region():
     print(count_per_city)
     return result_list,count_per_city
 
-def count_per_coordinate():
-    today_min = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
-    today_max = datetime.datetime.combine(datetime.date.today(), datetime.time.max)
+def count_per_coordinate(curr_date):
+    today_min = datetime.datetime.combine(curr_date, datetime.time.min)
+    today_max = datetime.datetime.combine(curr_date, datetime.time.max)
     result = Metric.objects.filter(date__range=(today_min, today_max)) \
                            .values('postal_code__lat','postal_code__lon') \
                            .annotate(lat=F('postal_code__lat'),lon=F('postal_code__lon'),value=Count('id')) \
                            .values('lat','lon','value')
     return list(result)
 
-def category_per_city():
-    today_min = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
-    today_max = datetime.datetime.combine(datetime.date.today(), datetime.time.max)
+def category_per_city(curr_date):
+    today_min = datetime.datetime.combine(curr_date, datetime.time.min)
+    today_max = datetime.datetime.combine(curr_date, datetime.time.max)
     data = []
     for city in settings.CITIES_ZIP_CODE:
         code_from = settings.CITIES_ZIP_CODE[city][0]
         code_to = settings.CITIES_ZIP_CODE[city][1]
-        result = Metric.objects.filter(postal_code__postal_code__range=(code_from,code_to)) \
+        result = Metric.objects.filter(date__range=(today_min, today_max),
+                                       postal_code__postal_code__range=(code_from,code_to)) \
                                .values('reason') \
                                .annotate(value=Count('id')) \
                                .values('reason','value') \
@@ -193,16 +199,16 @@ def category_per_city():
     return data
 
 
-def hourly_baseline_comparison():
-    today_min = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
-    today_max = datetime.datetime.combine(datetime.date.today(), datetime.time.max)
-    yesterday = datetime.datetime.now()-datetime.timedelta(days=1)
+def hourly_baseline_comparison(curr_date):
+    today_min = datetime.datetime.combine(curr_date, datetime.time.min)
+    today_max = datetime.datetime.combine(curr_date, datetime.time.max)
+    yesterday = curr_date-datetime.timedelta(days=1)
     daily_count = {}
     avg = [0]*24
     date_now = timezone.now()
     oldest_day = (date_now-Metric.objects.all().order_by('date').first().date).days
     for i in range(1,oldest_day+1):
-        curr_day = datetime.datetime.now()-datetime.timedelta(days=i)
+        curr_day = curr_date-datetime.timedelta(days=i)
         for city in settings.CITIES_ZIP_CODE:#count for each city daily count
             code_from = settings.CITIES_ZIP_CODE[city][0]
             code_to = settings.CITIES_ZIP_CODE[city][1]

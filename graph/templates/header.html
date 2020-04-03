@@ -36,8 +36,8 @@
         </a>
       </li>
     </ul>
-    <form class="form-inline my-2 my-lg-0">
-      <input id="person_search" class="form-control mr-sm-2" type="search" placeholder="Search Specific ID" aria-label="Search">
+    <form id="form-date" action="{% url 'index' %}" method="get" class="form-inline my-2 my-lg-0">
+      <input type="date" id="date-input" class="form-control mr-sm-2" placeholder="Select date" aria-label="Search">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
     </form>
   </div>
