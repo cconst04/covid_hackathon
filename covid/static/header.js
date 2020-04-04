@@ -1,5 +1,4 @@
 $(document).ready(function(){
-  console.log($("#form-date"));
   $("#form-date").on("submit",function(e){
     // $(this).attr("")
     e.preventDefault();

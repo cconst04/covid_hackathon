@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
 <div class="row" id="main">
-  <div class="col-2 space-left" id="statistics">
+  <div class="col-md-2 space-left" id="statistics">
     <h4>Total SMS sent:{{total_messages}}</h4>
     <ul class="list-group">
       {% for item in today_age_stats %}
@@ -10,7 +10,8 @@
       <li class="list-group-item">
         <div class="progress">
           <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="{{item.users}}"aria-valuemin="0" aria-valuemax="{{item.total}}" style="width:{{item.pct}}%">
-            {{item.users}}/{{item.total}}
+            <small style="color:black;" class="justify-content-center d-flex position-absolute w-100">{{item.users}}/{{item.total}}
+            </small>
           </div>
         </div>
       </li>
@@ -37,10 +38,10 @@
     {% endfor %}
     </ul>
   </div>
-  <div class="col-10 align-center">
+  <div class="col-md-10 align-center">
   <!-- <div class="container"> -->
     <div class="row">
-      <div class="col-10">
+      <div class="col-md-10">
         <div class="card">
           <div class="card-header">Activity per hour</div>
           <div id="chartdiv"></div>
@@ -49,7 +50,7 @@
     </div>
 
     <div class="row">
-      <div class="col-10">
+      <div class="col-md-10">
         <div class="card">
           <div class="card-header">Messages per postal code</div>
           <div id="map"></div>
@@ -58,7 +59,7 @@
     </div>
 
     <div class="row">
-      <div class="col-10">
+      <div class="col-md-10">
         <div class="card">
           <div class="card-header">Hourly comparison with baseline</div>
           <div id="baseline_compare"></div>
@@ -67,22 +68,22 @@
     </div>
 
     <div class="row">
-      <div class="col-5">
+      <div class="col-md-10">
         <div class="card">
           <div class="card-header">Category count per city</div>
           <div id="category_map" class="bottom_row"></div>
         </div>
       </div>
-      <div class="col-5">
-        <div class="card">
-          <div class="card-header">Activity per hour</div>
-          <figure class="highcharts-figure bottom_row">
-              <div id="container"></div>
-              <p class="highcharts-description">
-                  Number of SMS per city. Click on a bar for more details.
-              </p>
-          </figure>
-        </div>
+    </div>
+    <div class="col-md-10">
+      <div class="card">
+        <div class="card-header">Activity per hour</div>
+        <figure class="highcharts-figure bottom_row">
+            <div id="container"></div>
+            <p class="highcharts-description">
+                Number of SMS per city. Click on a bar for more details.
+            </p>
+        </figure>
       </div>
     </div>
   </div>

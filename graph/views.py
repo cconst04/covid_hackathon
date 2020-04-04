@@ -166,7 +166,7 @@ def today_count_by_region(curr_date):
             if len(result)>0:
                 city_dict['data'].append([str(i)+'-'+str(i+step_factor),result.aggregate(Sum('value'))['value__sum']])
         result_list.append(city_dict)
-    print(count_per_city)
+    # print(count_per_city)
     return result_list,count_per_city
 
 def count_per_coordinate(curr_date):
@@ -253,7 +253,7 @@ def hourly_baseline_comparison(curr_date):
         'previousDate':today_records[i]['hour'].strftime("%Y-%m-%dT%H:%M:%SZ")
         }
         result_list[today_records[i]['hour'].hour]=temp
-    print(daily_count)
+    # print(daily_count)
     return result_list,daily_count
 
 def load_id_age(request):
@@ -287,17 +287,17 @@ def sidebar_stats(curr_date):
         result = Metric.objects.filter(ssn__age__range=(item[0],item[1]),
                                        date__range=(today_min,today_max)) \
                                .distinct('ssn__ssn')
-        total = Metric.objects.filter(ssn__age__range=(item[0],item[1])).distinct('ssn')
-        pct_today = 100*len(result)/len(total)
+        total = Metric.objects.filter(date__range=(today_min,today_max)).distinct('ssn')
+        pct_today = 100*len(result)/len(total) if len(total)>0 else 0
         pct_per_age.append({'range':str(item[0])+'-'+str(item[1]),
                             'users':len(result),
                             'total':len(total),
-                            'pct':100*len(result)/len(total)})
+                            'pct':pct_today})
 
         yesterday_result = Metric.objects.filter(ssn__age__range=(item[0],item[1]),
                                                  date__range=(yesterday_min,yesterday_max)) \
                                          .distinct('ssn__ssn')
-        pct_yesterday = 100*len(yesterday_result)/len(total)
+        pct_yesterday = 100*len(yesterday_result)/len(total) if len(total)>0 else 0
         # import pdb;pdb.set_trace()
         pct_change.append({'range':str(item[0])+'-'+str(item[1]),
                            'users_yesterday':len(yesterday_result),

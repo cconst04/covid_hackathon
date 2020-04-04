@@ -32,7 +32,7 @@ Highcharts.chart('container', {
             borderWidth: 0,
             dataLabels: {
                 enabled: true,
-                format: '{point.y:} SMS'
+                format: '{point.y}'
             }
         }
     },
@@ -43,7 +43,7 @@ Highcharts.chart('container', {
     },
     series: [
         {
-            name: "Browsers",
+            name: "Cities",
             colorByPoint: true,
             data: all_data.count_per_city_today
         }

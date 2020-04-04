@@ -15,7 +15,8 @@ $("#people_search").on("click",function(){
       var res='<ul class="list-group">';
       console.log(response.data.length);
       for(var i=0;i<response.data.length;i++){
-        res+='<li class="list-group-item">['+new Date(response.data[i].date)+']reason:'+response.data[i].reason+'</li>';
+        res+='<li class="list-group-item">['+new Date(response.data[i].date)+
+             '][Postal Code:'+response.data[i].postal_code__postal_code+'][Reason:'+response.data[i].reason+']</li>';
       }
       res+="</ul>"
       console.log(res);
