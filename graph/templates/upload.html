@@ -4,76 +4,84 @@
 <!-- Upload form. Note enctype attribute! -->
 <div class="container">
   <div class="card">
-    <h1>Upload SMS CSV</h1>
-    <p>CSV Format:SSN,Activity_category,Postal_code,Extra_Info(optional for category 8)</p>
-    <form action="{% url 'upload' %}" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <p>{{ form.non_field_errors }}</p>
-        <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
-        <p>
-            {{ form.docfile.errors }}
-            {{ form.docfile }}
-        </p>
-        <div class="custom-file">
-          <input type="file" name="myfile" class="custom-file-input" id="customFile">
-          <label class="custom-file-label" for="customFile">Choose file</label>
-        </div>
-        <p><input type="submit" class="btn btn-primary" value="Upload" /></p>
-    </form>
+    <div class="card-header">Upload SMS CSV</div>
+    <div class="card-body">
+      <p>CSV Format:SSN,Activity_category,Postal_code,Extra_Info(optional for category 8)</p>
+      <form action="{% url 'upload' %}" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <p>{{ form.non_field_errors }}</p>
+          <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
+          <p>
+              {{ form.docfile.errors }}
+              {{ form.docfile }}
+          </p>
+          <div class="custom-file">
+            <input type="file" name="myfile" class="custom-file-input" id="customFile">
+            <label class="custom-file-label" for="customFile">Choose file</label>
+          </div>
+          <input type="submit" class="btn btn-primary btn-block" value="Upload" />
+      </form>
+    </div>
   </div>
   <div class="card">
-    <h1>Upload Postal codes description</h1>
-    <p>CSV Format:Postal_code,Lat,Lon,Population</p>
-    <form action="{% url 'load_postal_codes' %}" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <p>{{ form.non_field_errors }}</p>
-        <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
-        <p>
-            {{ form.docfile.errors }}
-            {{ form.docfile }}
-        </p>
-        <div class="custom-file">
-          <input type="file" name="myfile" class="custom-file-input" id="customFile">
-          <label class="custom-file-label" for="customFile">Choose file</label>
-        </div>
-        <p><input type="submit" class="btn btn-primary" value="Upload" /></p>
-    </form>
+    <div class="card-header">Upload Postal codes description</div>
+    <div class="card-body">
+      <p>CSV Format:Postal_code,Lat,Lon,Population</p>
+      <form action="{% url 'load_postal_codes' %}" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <p>{{ form.non_field_errors }}</p>
+          <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
+          <p>
+              {{ form.docfile.errors }}
+              {{ form.docfile }}
+          </p>
+          <div class="custom-file">
+            <input type="file" name="myfile" class="custom-file-input" id="customFile">
+            <label class="custom-file-label" for="customFile">Choose file</label>
+          </div>
+          <input type="submit" class="btn btn-primary btn-block" value="Upload" />
+      </form>
+    </div>
   </div>
   <div class="card">
-    <h1>Upload age for each ID</h1>
-    <p>CSV Format:ID,Age</p>
-    <form action="{% url 'load_id_age' %}" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <p>{{ form.non_field_errors }}</p>
-        <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
-        <p>
-            {{ form.docfile.errors }}
-            {{ form.docfile }}
-        </p>
-        <div class="custom-file">
-          <input type="file" name="myfile" class="custom-file-input" id="customFile">
-          <label class="custom-file-label" for="customFile">Choose file</label>
-        </div>
-        <p><input type="submit" class="btn btn-primary" value="Upload" /></p>
-    </form>
+    <div class="card-header">Upload age for each ID</div>
+    <div class="card-body">
+      <p>CSV Format:ID,Age</p>
+      <form action="{% url 'load_id_age' %}" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <p>{{ form.non_field_errors }}</p>
+          <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
+          <p>
+              {{ form.docfile.errors }}
+              {{ form.docfile }}
+          </p>
+          <div class="custom-file">
+            <input type="file" name="myfile" class="custom-file-input" id="customFile">
+            <label class="custom-file-label" for="customFile">Choose file</label>
+          </div>
+          <p><input type="submit" class="btn btn-primary btn-block" value="Upload" /></p>
+      </form>
+    </div>
   </div>
   <div class="card">
-    <h1>Upload Fines</h1>
-    <p>CSV Format:timestamp,latitude,longitude,fine count</p>
-    <form action="{% url 'upload_fines' %}" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <p>{{ form.non_field_errors }}</p>
-        <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
-        <p>
-            {{ form.docfile.errors }}
-            {{ form.docfile }}
-        </p>
-        <div class="custom-file">
-          <input type="file" name="myfile" class="custom-file-input" id="customFile">
-          <label class="custom-file-label" for="customFile">Choose file</label>
-        </div>
-        <p><input type="submit" class="btn btn-primary" value="Upload" /></p>
-    </form>
+    <div class="card-header">Upload Fines</div>
+    <div class="card-body">
+      <p>CSV Format:timestamp,latitude,longitude,fine count</p>
+      <form action="{% url 'upload_fines' %}" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <p>{{ form.non_field_errors }}</p>
+          <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
+          <p>
+              {{ form.docfile.errors }}
+              {{ form.docfile }}
+          </p>
+          <div class="custom-file">
+            <input type="file" name="myfile" class="custom-file-input" id="customFile">
+            <label class="custom-file-label" for="customFile">Choose file</label>
+          </div>
+          <p><input type="submit" class="btn btn-primary btn-block" value="Upload" /></p>
+      </form>
+    </div>
   </div>
 </div>
 {% endblock %}

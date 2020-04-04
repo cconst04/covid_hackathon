@@ -14,8 +14,12 @@ import os
 
 #templates/examples/dashboard/index.html
 def index(request):
+    try:
+        curr_date = datetime.datetime.strptime(request.GET['date'],"%Y-%m-%d")
+    except:
+        curr_date = datetime.datetime.now()
     # import pdb;pdb.set_trace()
-    return render(request,'index.html',sidebar_stats())
+    return render(request,'index.html',sidebar_stats(curr_date))
 
 def get_all_data(request):
     try:
@@ -52,7 +56,7 @@ def upload_fines(request):
             reader = csv.reader(f,delimiter=',')
             data = list(reader)
         data.pop(0) #remove the description
-        Fine.objects.all().delete()#delete previous records
+        # Fine.objects.all().delete()#delete previous records
         for row in data:
             record = Fine(date=row[0],lat=row[1],lon=row[2],count=row[3])
             record.save()
@@ -71,7 +75,7 @@ def upload_file(request):
             reader = csv.reader(f,delimiter=',')
             data = list(reader)
         data.pop(0) #remove the description
-        Metric.objects.all().delete()#delete previous records
+        # Metric.objects.all().delete()#delete previous records
         for row in data:
             postal_code_row = PostalCodeInfo.objects.filter(postal_code=row[3]).first()
             person_row = Person.objects.filter(ssn=row[0]).first()
@@ -108,7 +112,7 @@ Grouped by hour graph
 '''
 def per_hour_graph(curr_date):
     start_date = curr_date
-    end_date = curr_date-datetime.timedelta(days=3)#show past 30 days
+    end_date = curr_date-datetime.timedelta(days=1)#show past 30 days
     delta = datetime.timedelta(days=1)
     date_dict=[]
     while start_date >= end_date:
@@ -136,7 +140,7 @@ Grouped by count graph
 '''
 def today_count_by_region(curr_date):
     today_min = datetime.datetime.combine(curr_date, datetime.time.min)
-    today_max = datetime.datetime.combine(curr_date, datetime.time.max)
+    today_max = datetime.datetime.combine(today_min, datetime.time.max)
 
 
     result_list = []
@@ -167,7 +171,7 @@ def today_count_by_region(curr_date):
 
 def count_per_coordinate(curr_date):
     today_min = datetime.datetime.combine(curr_date, datetime.time.min)
-    today_max = datetime.datetime.combine(curr_date, datetime.time.max)
+    today_max = datetime.datetime.combine(today_min, datetime.time.max)
     result = Metric.objects.filter(date__range=(today_min, today_max)) \
                            .values('postal_code__lat','postal_code__lon') \
                            .annotate(lat=F('postal_code__lat'),lon=F('postal_code__lon'),value=Count('id')) \
@@ -176,7 +180,7 @@ def count_per_coordinate(curr_date):
 
 def category_per_city(curr_date):
     today_min = datetime.datetime.combine(curr_date, datetime.time.min)
-    today_max = datetime.datetime.combine(curr_date, datetime.time.max)
+    today_max = datetime.datetime.combine(today_min, datetime.time.max)
     data = []
     for city in settings.CITIES_ZIP_CODE:
         code_from = settings.CITIES_ZIP_CODE[city][0]
@@ -201,7 +205,7 @@ def category_per_city(curr_date):
 
 def hourly_baseline_comparison(curr_date):
     today_min = datetime.datetime.combine(curr_date, datetime.time.min)
-    today_max = datetime.datetime.combine(curr_date, datetime.time.max)
+    today_max = datetime.datetime.combine(today_min, datetime.time.max)
     yesterday = curr_date-datetime.timedelta(days=1)
     daily_count = {}
     avg = [0]*24
@@ -271,9 +275,9 @@ def load_id_age(request):
         return HttpResponse("Success")
 
 
-def sidebar_stats():
-    today_min = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
-    today_max = datetime.datetime.combine(datetime.date.today(), datetime.time.max)
+def sidebar_stats(curr_date):
+    today_min = datetime.datetime.combine(curr_date, datetime.time.min)
+    today_max = datetime.datetime.combine(today_min, datetime.time.max)
     yesterday_min = today_min - datetime.timedelta(days=1)
     yesterday_max = today_max - datetime.timedelta(days=1)
     ranges = [(10,20),(21,40),(41,60),(61,100)]
@@ -294,14 +298,16 @@ def sidebar_stats():
                                                  date__range=(yesterday_min,yesterday_max)) \
                                          .distinct('ssn__ssn')
         pct_yesterday = 100*len(yesterday_result)/len(total)
+        # import pdb;pdb.set_trace()
         pct_change.append({'range':str(item[0])+'-'+str(item[1]),
                            'users_yesterday':len(yesterday_result),
                            'users_today':len(result),
-                           'pct_change':(len(result)-len(yesterday_result))/len(total),
+                           'pct_change':pct_today-pct_yesterday,
                            'total':len(total)})
+        total_messages = len(Metric.objects.filter(date__range=(today_min,today_max)))
     return {'age_stats_change':pct_change,
             'today_age_stats':pct_per_age,
-            'total_messages':len(Metric.objects.all())}
+            'total_messages':total_messages}
 
 
 def individual_stats(request):
@@ -319,5 +325,5 @@ def individual_info(request):
     ssn_row = Person.objects.filter(ssn=ssn).first()
     if not ssn_row:
         return JsonResponse({'status':0,'msg':'SSN not found'})
-    metrics = Metric.objects.filter(ssn=ssn_row).order_by('-date').values('date','reason')
+    metrics = Metric.objects.filter(ssn=ssn_row).order_by('-date').values('date','reason','postal_code__postal_code')
     return JsonResponse({'status':1,'data':list(metrics)})
