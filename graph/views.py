@@ -47,6 +47,8 @@ def history_page(request):
 
 def upload_fines(request):
     if request.method == 'POST' and 'myfile' in request.FILES and request.FILES['myfile']:
+        if settings.DEMO:
+            return HttpResponse(settings.DEMO_MSG, content_type="text/plain")
         myfile = request.FILES['myfile']
         if os.path.exists(os.path.join(settings.MEDIA_ROOT, settings.CSV_FILENAME)):
             os.remove(os.path.join(settings.MEDIA_ROOT, settings.CSV_FILENAME))
@@ -66,6 +68,8 @@ def upload_fines(request):
 
 def upload_file(request):
     if request.method == 'POST' and 'myfile' in request.FILES and request.FILES['myfile']:
+        if settings.DEMO:
+            return HttpResponse(settings.DEMO_MSG, content_type="text/plain")
         myfile = request.FILES['myfile']
         if os.path.exists(os.path.join(settings.MEDIA_ROOT, settings.CSV_FILENAME)):
             os.remove(os.path.join(settings.MEDIA_ROOT, settings.CSV_FILENAME))
@@ -91,6 +95,8 @@ def upload_file(request):
 
 def load_postal_codes(request):
     if request.method=='POST' and 'myfile' in request.FILES and request.FILES['myfile']:
+        if settings.DEMO:
+            return HttpResponse(settings.DEMO_MSG, content_type="text/plain")
         myfile = request.FILES['myfile']
         if os.path.exists(os.path.join(settings.MEDIA_ROOT, settings.CSV_FILENAME)):
             os.remove(os.path.join(settings.MEDIA_ROOT, settings.CSV_FILENAME))
@@ -258,6 +264,8 @@ def hourly_baseline_comparison(curr_date):
 
 def load_id_age(request):
     if request.method=='POST' and 'myfile' in request.FILES and request.FILES['myfile']:
+        if settings.DEMO:
+            return HttpResponse(settings.DEMO_MSG, content_type="text/plain")
         myfile = request.FILES['myfile']
         if os.path.exists(os.path.join(settings.MEDIA_ROOT, settings.CSV_FILENAME)):
             os.remove(os.path.join(settings.MEDIA_ROOT, settings.CSV_FILENAME))
