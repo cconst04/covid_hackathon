@@ -3,6 +3,9 @@ SNITCH(SMS Novel Insights Towards Coronavirus Halt) is a web platform for data v
 The user can upload various files containing SMS data, postal codes along with coordinates, demographics, and data about fines issued by Police officers. 
 This system is intended to be used by the cypriot government.
 
+##Demo Video
+https://www.youtube.com/watch?v=noDIflSOxoI&t=80s
+
 ## Tech stack:
 SNITCH utilizes Python3, Django Framework, PostgreSQL, Javascript chart libraries (amCharts and Highcharts), and Google Maps. The solution is built and run as Docker containers.
 
